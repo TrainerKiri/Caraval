@@ -25,7 +25,11 @@ function OPoeta() {
                 <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-deep-blue/80"></div>
                 
-<p>Quem é Aiónskald?
+
+                </div>
+              </div>
+            </div>
+            Quem é Aiónskald?
 
 Não há uma resposta fácil para isso. Aiónskald não é uma figura divina ou uma entidade além da compreensão humana. Ele é apenas alguém, um homem como qualquer outro, com suas falhas e virtudes. Mas, ao mesmo tempo, é alguém que se entrega ao ofício de contar histórias e de guardar memórias com uma intensidade que poucos entendem.
 
@@ -47,10 +51,7 @@ Então, quem é Aiónskald?
 Ele é o homem que se tornou a memória. O contador de histórias que usa palavras para preservar o que o tempo tenta apagar. E talvez, no final, você perceba que ele não é apenas um narrador. Ele é uma ponte. Uma ponte entre o que foi e o que é, entre o que se perde e o que fica.
 
 Com humildade e um toque de mistério,
-Aiónskald, o Poeta.</p>
-                </div>
-              </div>
-            </div>
+Aiónskald, o Poeta.
           </div>
         </div>
       </div>
