@@ -24,34 +24,30 @@ function OPoeta() {
               <div className="md:w-1/3">
                 <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-deep-blue/80"></div>
-                  <img 
-                    src="https://images.pexels.com/photos/2531553/pexels-photo-2531553.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                    alt="O Poeta" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 
-                <div className="flex justify-center gap-4 text-gold mt-2">
-                  <Book size={20} />
-                  <Heart size={20} />
-                  <Sparkles size={20} />
-                </div>
-              </div>
-              
-              <div className="md:w-2/3">
-                <h3 className="text-xl font-serif text-gold mb-4">Sobre o Criador</h3>
-                
-                <div className="prose prose-invert text-soft-white/90 max-w-none">
-                  <p className="mb-4">Aqui entre palavras e silêncios, entre luzes e estrelas, sou apenas alguém que tenta capturar o infinito em algumas linhas. O tempo é como areia entre os dedos, e estas memórias são minha tentativa de guardar alguns grãos.</p>
-                  
-                  <p className="mb-4">Colecionador de momentos, observador de sorrisos. Acredito que cada instante compartilhado carrega uma magia própria, e através destas páginas, tento eternizar o que o tempo insiste em levar.</p>
-                  
-                  <blockquote className="border-l-2 border-gold/50 pl-4 italic my-6">
-                    "Somos feitos da mesma substância dos sonhos, e nossa pequena vida está cercada de sono."
-                    <footer className="text-gold/70 not-italic text-sm mt-1">— William Shakespeare</footer>
-                  </blockquote>
-                  
-                  <p>Este espaço é um convite para uma jornada através das minhas memórias mais preciosas, momentos capturados entre o real e o sonhado, entre o vivido e o imaginado.</p>
+<p>Quem é Aiónskald?
+
+Não há uma resposta fácil para isso. Aiónskald não é uma figura divina ou uma entidade além da compreensão humana. Ele é apenas alguém, um homem como qualquer outro, com suas falhas e virtudes. Mas, ao mesmo tempo, é alguém que se entrega ao ofício de contar histórias e de guardar memórias com uma intensidade que poucos entendem.
+
+O que o torna diferente, então?
+
+Talvez seja a maneira como ele observa o mundo. A maneira como ele vê cada momento como algo que merece ser eternizado. Aiónskald não escreve apenas para registrar o que aconteceu — ele escreve para capturar a essência de cada experiência, para preservar o que, muitas vezes, se perde com o tempo. Seu nome, que é um jogo entre o eterno e o efêmero, reflete justamente isso: o desejo de transformar o simples em algo eterno, mesmo sabendo que a eternidade, no fim, é uma ilusão.
+
+Ele é um homem comum, mas não vive de forma comum. Seu olhar curioso e atento para as pequenas coisas, seu jeito de mergulhar fundo nas memórias e transformá-las em algo maior, mais significativo — isso é o que o torna único. A cada memória que ele compartilha, Aiónskald revela um pedaço de sua alma, um fragmento de seu entendimento sobre a vida e sobre o que realmente importa.
+
+Ele não é um mestre no sentido tradicional da palavra. Não há sabedoria absoluta em suas palavras, apenas uma compreensão que vem de vivências, de momentos sentidos e absorvidos. O Poeta é alguém que, como todos, comete erros e busca respostas, mas que escolheu deixar uma marca, um legado, através das histórias que conta.
+
+E, como qualquer contador de histórias, Aiónskald deixa algo para o leitor, algo que vai além da narrativa. Não são apenas palavras, mas sentimentos, reflexões. Cada memória registrada aqui não é só um pedaço do passado; é uma lição, um convite para pensar, para se conectar com o que foi vivido. A cada história que você lê, Aiónskald revela um pouco mais de quem ele é — mas sempre de forma sutil, sem se revelar por completo.
+
+Por que ele faz isso?
+Porque, no fundo, o Poeta acredita que as histórias têm um poder peculiar. Elas nos conectam uns aos outros, atravessam o tempo e nos mostram que, por mais que mudemos, o essencial permanece. Ele acredita que, ao contar essas memórias, ele mantém viva a chama do que é humano, do que é real. O Poeta não precisa se mostrar como um ser sobrenatural para tocar os corações. Ele sabe que o simples fato de compartilhar uma memória já é um ato de magia por si só.
+
+Então, quem é Aiónskald?
+
+Ele é o homem que se tornou a memória. O contador de histórias que usa palavras para preservar o que o tempo tenta apagar. E talvez, no final, você perceba que ele não é apenas um narrador. Ele é uma ponte. Uma ponte entre o que foi e o que é, entre o que se perde e o que fica.
+
+Com humildade e um toque de mistério,
+Aiónskald, o Poeta.</p>
                 </div>
               </div>
             </div>
