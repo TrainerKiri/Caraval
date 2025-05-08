@@ -42,7 +42,7 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
           className="font-serif text-2xl text-gold cursor-pointer"
           onClick={() => setCurrentPage('entrada')}
         >
-          Memórias Encantadas
+          Anannesis
         </h1>
 
         {/* Desktop Navigation */}
