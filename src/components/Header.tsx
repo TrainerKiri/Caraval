@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   currentPage: string;
   setCurrentPage: (page: string) => void;
+  isAdmin: boolean;
 }
 
-function Header({ currentPage, setCurrentPage }: HeaderProps) {
+function Header({ currentPage, setCurrentPage, isAdmin }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
 
   const menuItems = [
     { id: 'entrada', label: 'Início' },
@@ -20,6 +23,10 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
     { id: 'creditos', label: 'Epílogo' },
   ];
 
+  if (!isAdmin) {
+    menuItems.push({ id: 'admin', label: 'Admin' });
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -28,6 +35,15 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setCurrentPage('entrada');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
     <header 
@@ -45,30 +61,34 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
           Anannesis
         </h1>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:block">
-          <ul className="flex space-x-6">
-            {menuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => setCurrentPage(item.id)}
-                  className={`relative font-medium text-sm uppercase tracking-wider transition-colors duration-300 ${
-                    currentPage === item.id 
-                      ? 'text-gold' 
-                      : 'text-soft-white hover:text-gold'
-                  }`}
-                >
-                  {item.label}
-                  {currentPage === item.id && (
-                    <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold"></span>
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <nav className="hidden md:flex items-center space-x-6">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setCurrentPage(item.id)}
+              className={`relative font-medium text-sm uppercase tracking-wider transition-colors duration-300 ${
+                currentPage === item.id 
+                  ? 'text-gold' 
+                  : 'text-soft-white hover:text-gold'
+              }`}
+            >
+              {item.label}
+              {currentPage === item.id && (
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold"></span>
+              )}
+            </button>
+          ))}
+          
+          {isAdmin && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center text-soft-white/70 hover:text-soft-white"
+            >
+              <LogOut size={18} />
+            </button>
+          )}
         </nav>
 
-        {/* Mobile Menu Button */}
         <button 
           className="md:hidden text-soft-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -77,7 +97,6 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
         </button>
       </div>
 
-      {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <nav className="md:hidden bg-deep-blue/95 backdrop-blur-lg">
           <ul className="flex flex-col py-4">
@@ -98,6 +117,21 @@ function Header({ currentPage, setCurrentPage }: HeaderProps) {
                 </button>
               </li>
             ))}
+            
+            {isAdmin && (
+              <li>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center w-full py-3 px-4 text-soft-white/70"
+                >
+                  <LogOut size={18} className="mr-2" />
+                  Sair
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
       )}

@@ -26,53 +26,63 @@ function Entrada({ onExplore }: EntradaProps) {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-4">
-      {/* Background with subtle star effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="stars-container absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-light-deep-blue via-deep-blue to-deep-blue"></div>
+    <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="stars"></div>
       </div>
       
-      {/* Content */}
-      <div className={`relative max-w-3xl mx-auto transition-all duration-1000 ${
+      <div className={`relative max-w-3xl mx-auto transition-all duration-1000 mt-16 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}>
-        <h1 className="text-4xl md:text-6xl font-serif font-bold text-gold mb-6">
-          Primeiramente...
-
-Bem-vindo às minhas memórias. Ou melhor, às nossas.
-Porque muitas delas só ganham significado quando compartilhadas com alguém que se importa.
-
-Mas aqui, no silêncio entre os dias, o papel de poeta, cronista ou talvez só um contador distraído de momentos... será meu.
-
-Quem sou eu?
-Isso talvez seja o menos importante.
-Mas, já que estamos aqui, você pode me chamar de Aiónskald —
-um nome que carrega o peso de mil instantes, o som de uma canção esquecida, e o ressoar das lembranças que nunca se apagam.
-Ou, se preferir, Senhor Aluado — o nome que flutua entre o devaneio e o riso, como uma estrela fugaz no céu da nossa história.
-E, um dia, quem sabe, eu explico o porquê de cada um desses nomes.
-Mas hoje, basta saber que sou alguém que, como você, viveu e amou cada segundo que aqui compartilho.
-
-Se você está lendo estas palavras, é porque eu confio em você.
-Não apenas para ver o que está aqui, mas para sentir o que foi deixado, escondido entre as palavras, nas brechas do tempo.
-
-Cada memória que deixo registrada aqui não é só uma foto, nem apenas uma data.
-É um fragmento de um tempo que congelei com carinho,
-um momento em que o mundo parecia fazer sentido, ou ao menos… parecia ter valido a pena.
-
-Você vai encontrar coisas simples, algumas doces, outras talvez um pouco confusas.
-E tudo bem.
-Às vezes, até rir sozinho é necessário para entender o que o coração tenta dizer.
-
-Espero que, enquanto explora este cantinho, suspenso no espaço e no tempo,
-você se permita sorrir, se perder um pouco, talvez até se encontrar em algo que não esperava.
-Porque, no fundo...
-essa não é só a minha história.
-É a nossa história, contada a partir do meu olhar, mas sempre esperando que você a enxergue com os seus próprios olhos.
-
-Com gratidão, um toque de luar, e o silêncio que só o tempo pode trazer,
-
-Aiónskald
-        </h1>
+        <div className="prose prose-invert max-w-none mb-8">
+          <h1 className="text-4xl md:text-5xl font-serif text-gold mb-8">Primeiramente...</h1>
+          
+          <div className="text-lg md:text-xl text-soft-white/90 space-y-6">
+            <p>
+              Bem-vindo às minhas memórias. Ou melhor, às nossas.
+              Porque muitas delas só ganham significado quando compartilhadas com alguém que se importa.
+            </p>
+            
+            <p>
+              Mas aqui, no silêncio entre os dias, o papel de poeta, cronista ou talvez só um contador 
+              distraído de momentos... será meu.
+            </p>
+            
+            <p className="text-gold italic">
+              Quem sou eu?<br />
+              Isso talvez seja o menos importante.
+            </p>
+            
+            <p>
+              Mas, já que estamos aqui, você pode me chamar de Aiónskald —
+              um nome que carrega o peso de mil instantes, o som de uma canção esquecida, 
+              e o ressoar das lembranças que nunca se apagam.
+            </p>
+            
+            <p>
+              Ou, se preferir, Senhor Aluado — o nome que flutua entre o devaneio e o riso, 
+              como uma estrela fugaz no céu da nossa história.
+            </p>
+            
+            <p className="text-gold/80">
+              E, um dia, quem sabe, eu explico o porquê de cada um desses nomes.
+            </p>
+            
+            <div className="border-l-4 border-gold/30 pl-6 my-8">
+              <p className="text-xl italic">
+                Se você está lendo estas palavras, é porque eu confio em você.
+                Não apenas para ver o que está aqui, mas para sentir o que foi deixado, 
+                escondido entre as palavras, nas brechas do tempo.
+              </p>
+            </div>
+            
+            <p>
+              Cada memória que deixo registrada aqui não é só uma foto, nem apenas uma data.
+              É um fragmento de um tempo que congelei com carinho,
+              um momento em que o mundo parecia fazer sentido, ou ao menos… parecia ter valido a pena.
+            </p>
+          </div>
+        </div>
         
         <div className="h-16 md:h-20 mb-8 relative">
           {welcomeTexts.map((text, index) => (

@@ -37,11 +37,18 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('memories')
-        .select('*')
+        .select('*, memory_images(url)')
         .order('date', { ascending: false });
 
       if (error) throw error;
-      setMemories(data || []);
+
+      // Transform the data to match our Memory type
+      const transformedMemories = data.map(memory => ({
+        ...memory,
+        imageUrl: memory.memory_images?.[0]?.url || memory.image_url // Use first image from memory_images or fallback to image_url
+      }));
+
+      setMemories(transformedMemories || []);
     } catch (error) {
       console.error('Error fetching memories:', error);
     } finally {
@@ -65,14 +72,40 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
 
   const addMemory = async (memory: Omit<Memory, 'id'>) => {
     try {
-      const { data, error } = await supabase
+      // First, insert the memory
+      const { data: memoryData, error: memoryError } = await supabase
         .from('memories')
-        .insert([memory])
+        .insert([{
+          title: memory.title,
+          description: memory.description,
+          date: memory.date,
+          image_url: memory.imageUrl, // Store in the original column as backup
+          tags: memory.tags
+        }])
         .select()
         .single();
 
-      if (error) throw error;
-      setMemories(prev => [data, ...prev]);
+      if (memoryError) throw memoryError;
+
+      // Then, add the image to memory_images
+      if (memory.imageUrl) {
+        const { error: imageError } = await supabase
+          .from('memory_images')
+          .insert([{
+            memory_id: memoryData.id,
+            url: memory.imageUrl,
+          }]);
+
+        if (imageError) throw imageError;
+      }
+
+      // Update the local state with the new memory
+      const newMemory = {
+        ...memoryData,
+        imageUrl: memory.imageUrl
+      };
+      
+      setMemories(prev => [newMemory, ...prev]);
     } catch (error) {
       console.error('Error adding memory:', error);
     }
@@ -80,15 +113,36 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
 
   const updateMemory = async (id: string, memory: Partial<Memory>) => {
     try {
-      const { data, error } = await supabase
+      // Update the main memory record
+      const { data: memoryData, error: memoryError } = await supabase
         .from('memories')
-        .update(memory)
+        .update({
+          title: memory.title,
+          description: memory.description,
+          date: memory.date,
+          image_url: memory.imageUrl, // Update backup image
+          tags: memory.tags
+        })
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
-      setMemories(prev => prev.map(m => m.id === id ? { ...m, ...data } : m));
+      if (memoryError) throw memoryError;
+
+      // Update or insert the image in memory_images
+      if (memory.imageUrl) {
+        const { error: imageError } = await supabase
+          .from('memory_images')
+          .upsert([{
+            memory_id: id,
+            url: memory.imageUrl,
+          }]);
+
+        if (imageError) throw imageError;
+      }
+
+      // Update local state
+      setMemories(prev => prev.map(m => m.id === id ? { ...m, ...memory } : m));
     } catch (error) {
       console.error('Error updating memory:', error);
     }
