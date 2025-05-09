@@ -11,19 +11,11 @@
 
 @keyframes shooting-star {
   0% {
-<<<<<<< HEAD
-    transform: translateX(-100px) translateY(-100px) rotate(45deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(200vw) translateY(200vh) rotate(45deg);
-=======
     transform: translateX(0) translateY(0) rotate(45deg);
     opacity: 1;
   }
   100% {
     transform: translateX(1000px) translateY(1000px) rotate(45deg);
->>>>>>> eb5ba7d76c1992360ac01936b2200db18b866553
     opacity: 0;
   }
 }
