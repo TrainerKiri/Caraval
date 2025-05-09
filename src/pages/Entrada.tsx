@@ -26,12 +26,12 @@ function Entrada({ onExplore }: EntradaProps) {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-4">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="stars-container absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-light-deep-blue via-deep-blue to-deep-blue"></div>
+    <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="stars"></div>
       </div>
       
-      <div className={`relative max-w-3xl mx-auto transition-all duration-1000 ${
+      <div className={`relative max-w-3xl mx-auto transition-all duration-1000 mt-16 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}>
         <div className="prose prose-invert max-w-none mb-8">

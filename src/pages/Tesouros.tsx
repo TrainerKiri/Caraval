@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Bookmark, Music, FileText, Sparkles } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 function Tesouros() {
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('conversas');
+  const { isAdmin } = useAuth();
   
   useEffect(() => {
     setVisible(true);
@@ -19,15 +21,15 @@ function Tesouros() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'conversas':
-        return <ConversasTab />;
+        return <ConversasTab isAdmin={isAdmin} />;
       case 'poemas':
-        return <PoemasTab />;
+        return <PoemasTab isAdmin={isAdmin} />;
       case 'musicas':
-        return <MusicasTab />;
+        return <MusicasTab isAdmin={isAdmin} />;
       case 'cartas':
-        return <CartasTab />;
+        return <CartasTab isAdmin={isAdmin} />;
       default:
-        return <ConversasTab />;
+        return <ConversasTab isAdmin={isAdmin} />;
     }
   };
 
@@ -73,7 +75,7 @@ function Tesouros() {
   );
 }
 
-function ConversasTab() {
+function ConversasTab({ isAdmin }: { isAdmin: boolean }) {
   const conversations = [
     {
       date: '10 de Maio, 2023',
@@ -97,14 +99,26 @@ function ConversasTab() {
 
   return (
     <div>
-      <h3 className="text-xl font-serif text-gold mb-6">Conversas Preciosas</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-serif text-gold">Conversas Preciosas</h3>
+        {isAdmin && (
+          <button className="text-gold hover:text-gold/80 transition-colors">
+            + Adicionar Conversa
+          </button>
+        )}
+      </div>
       
       <div className="space-y-8">
         {conversations.map((convo, index) => (
           <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
             <div className="flex items-center justify-between mb-4">
               <span className="text-soft-white/60 text-sm">{convo.date}</span>
-              <div className="w-12 h-0.5 bg-gold/20"></div>
+              {isAdmin && (
+                <div className="flex gap-2">
+                  <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
+                  <button className="text-red-400 hover:text-red-300">Excluir</button>
+                </div>
+              )}
             </div>
             
             <div className="space-y-4">
@@ -135,7 +149,7 @@ function ConversasTab() {
   );
 }
 
-function PoemasTab() {
+function PoemasTab({ isAdmin }: { isAdmin: boolean }) {
   const poems = [
     {
       title: 'Sussurro das Estrelas',
@@ -167,12 +181,27 @@ Cada promessa, uma constelação a guiar-nos.`,
 
   return (
     <div>
-      <h3 className="text-xl font-serif text-gold mb-6">Poemas & Escritos</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-serif text-gold">Poemas & Escritos</h3>
+        {isAdmin && (
+          <button className="text-gold hover:text-gold/80 transition-colors">
+            + Adicionar Poema
+          </button>
+        )}
+      </div>
       
       <div className="space-y-8">
         {poems.map((poem, index) => (
           <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
-            <h4 className="text-lg font-serif text-gold mb-3">{poem.title}</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-lg font-serif text-gold">{poem.title}</h4>
+              {isAdmin && (
+                <div className="flex gap-2">
+                  <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
+                  <button className="text-red-400 hover:text-red-300">Excluir</button>
+                </div>
+              )}
+            </div>
             <div className="whitespace-pre-line text-soft-white/90 italic mb-4">
               {poem.content}
             </div>
@@ -186,7 +215,7 @@ Cada promessa, uma constelação a guiar-nos.`,
   );
 }
 
-function MusicasTab() {
+function MusicasTab({ isAdmin }: { isAdmin: boolean }) {
   const playlists = [
     {
       name: 'Nossas Canções',
@@ -211,14 +240,31 @@ function MusicasTab() {
 
   return (
     <div>
-      <h3 className="text-xl font-serif text-gold mb-6">Nossas Melodias</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-serif text-gold">Nossas Melodias</h3>
+        {isAdmin && (
+          <button className="text-gold hover:text-gold/80 transition-colors">
+            + Adicionar Playlist
+          </button>
+        )}
+      </div>
       
       <div className="space-y-8">
         {playlists.map((playlist, index) => (
           <div key={index} className="bg-deep-blue/50 rounded-lg overflow-hidden border border-light-deep-blue/30">
             <div className="p-5">
-              <h4 className="text-lg font-serif text-gold mb-1">{playlist.name}</h4>
-              <p className="text-soft-white/70 text-sm mb-4">{playlist.description}</p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h4 className="text-lg font-serif text-gold mb-1">{playlist.name}</h4>
+                  <p className="text-soft-white/70 text-sm">{playlist.description}</p>
+                </div>
+                {isAdmin && (
+                  <div className="flex gap-2">
+                    <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
+                    <button className="text-red-400 hover:text-red-300">Excluir</button>
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="border-t border-light-deep-blue/30">
@@ -246,7 +292,7 @@ function MusicasTab() {
   );
 }
 
-function CartasTab() {
+function CartasTab({ isAdmin }: { isAdmin: boolean }) {
   const letters = [
     {
       title: 'Para abrir quando sentir saudade',
@@ -276,14 +322,29 @@ Quem te ama infinitamente`
 
   return (
     <div>
-      <h3 className="text-xl font-serif text-gold mb-6">Cartas & Bilhetes</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-serif text-gold">Cartas & Bilhetes</h3>
+        {isAdmin && (
+          <button className="text-gold hover:text-gold/80 transition-colors">
+            + Adicionar Carta
+          </button>
+        )}
+      </div>
       
       <div className="space-y-8">
         {letters.map((letter, index) => (
           <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-serif text-gold">{letter.title}</h4>
-              <span className="text-soft-white/60 text-sm">{letter.date}</span>
+              <div className="flex items-center gap-4">
+                <span className="text-soft-white/60 text-sm">{letter.date}</span>
+                {isAdmin && (
+                  <div className="flex gap-2">
+                    <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
+                    <button className="text-red-400 hover:text-red-300">Excluir</button>
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="relative">

@@ -26,7 +26,7 @@ function AppContent() {
         return <OPoeta />;
       case 'memorias':
         return <MemoriasGaleria />;
-      case 'musa':
+      case 'estrela':
         return <AMusa />;
       case 'tesouros':
         return <Tesouros />;

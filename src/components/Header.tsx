@@ -17,7 +17,7 @@ function Header({ currentPage, setCurrentPage, isAdmin }: HeaderProps) {
     { id: 'entrada', label: 'Início' },
     { id: 'poeta', label: 'O Poeta' },
     { id: 'memorias', label: 'Memórias' },
-    { id: 'musa', label: 'A Musa' },
+    { id: 'estrela', label: 'A Estrela' },
     { id: 'tesouros', label: 'Tesouros' },
     { id: 'sobrenos', label: 'Nossa História' },
     { id: 'creditos', label: 'Epílogo' },
