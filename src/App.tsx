@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MemoriesProvider } from './contexts/MemoriesContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Entrada from './pages/Entrada';
@@ -9,9 +10,13 @@ import AMusa from './pages/AMusa';
 import Tesouros from './pages/Tesouros';
 import SobreNos from './pages/SobreNos';
 import Creditos from './pages/Creditos';
+import AdminLogin from './components/AdminLogin';
+import MagicalBackground from './components/MagicalBackground';
+import { useAuth } from './contexts/AuthContext';
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState('entrada');
+  const { isAdmin, loading } = useAuth();
 
   const renderPage = () => {
     switch (currentPage) {
@@ -29,21 +34,36 @@ function App() {
         return <SobreNos />;
       case 'creditos':
         return <Creditos />;
+      case 'admin':
+        return isAdmin ? <MemoriasGaleria /> : <AdminLogin />;
       default:
         return <Entrada onExplore={() => setCurrentPage('memorias')} />;
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <MemoriesProvider>
-      <div className="min-h-screen flex flex-col bg-deep-blue text-soft-white">
-        <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-        <main className="flex-grow">
-          {renderPage()}
-        </main>
-        <Footer />
-      </div>
-    </MemoriesProvider>
+    <div className="min-h-screen flex flex-col relative">
+      <MagicalBackground />
+      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} isAdmin={isAdmin} />
+      <main className="flex-grow relative z-10">
+        {renderPage()}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <MemoriesProvider>
+        <AppContent />
+      </MemoriesProvider>
+    </AuthProvider>
   );
 }
 
