@@ -9,9 +9,9 @@ function AMusa() {
   }, []);
   
   const quotes = [
-    { quote: "Seus olhos guardam universos que ainda não explorei por completo.", author: "Do poeta para a musa" },
-    { quote: "Existem pessoas que são poemas andantes; ela é toda uma biblioteca de versos.", author: "Do poeta para a musa" },
-    { quote: "Às vezes me pergunto se as estrelas não são apenas reflexos do seu sorriso.", author: "Do poeta para a musa" }
+    { quote: "Seus olhos guardam universos que ainda não explorei por completo.", author: "Do poeta para a Estrela" },
+    { quote: "Existem pessoas que são poemas andantes; ela é toda uma biblioteca de versos.", author: "Do poeta para a Estrela" },
+    { quote: "Às vezes me pergunto se as estrelas não são apenas reflexos do seu sorriso.", author: "Do poeta para a Estrela" }
   ];
 
   return (
@@ -33,14 +33,14 @@ function AMusa() {
             <div className="relative bg-light-deep-blue/20 backdrop-blur-sm rounded-lg overflow-hidden">
               <div className="h-64 md:h-80 relative">
                 <img 
-                  src="https://images.pexels.com/photos/1987301/pexels-photo-1987301.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                  alt="A Musa" 
+                  src="" 
+                  alt="A Estrela" 
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-blue via-deep-blue/50 to-transparent"></div>
                 
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <h3 className="text-2xl md:text-3xl font-serif text-gold font-bold">Nome da Musa</h3>
+                  <h3 className="text-2xl md:text-3xl font-serif text-gold font-bold">Ana</h3>
                   <p className="text-soft-white/90 italic mt-2">
                     "Aquela que transforma momentos em eternidade"
                   </p>
@@ -84,19 +84,19 @@ function AMusa() {
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Aquele pôr do sol na praia quando vimos golfinhos</span>
+                  <span className="text-soft-white/90"></span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">A primeira vez que cozinhamos juntos e quase incendiamos a cozinha</span>
+                  <span className="text-soft-white/90"></span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">O concerto sob as estrelas no parque da cidade</span>
+                  <span className="text-soft-white/90"></span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Nossa viagem surpresa de aniversário</span>
+                  <span className="text-soft-white/90"</span>
                 </li>
               </ul>
             </div>
@@ -104,21 +104,7 @@ function AMusa() {
             <div className="bg-light-deep-blue/20 backdrop-blur-sm rounded-lg p-6 border border-light-deep-blue/30">
               <h3 className="text-xl font-serif text-gold mb-4">O Que Aprendi Com Ela</h3>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Que um abraço sincero pode curar o pior dos dias</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Que o silêncio compartilhado pode ser a conversa mais profunda</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Que planos improvisados geralmente se tornam as melhores memórias</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-gold mr-2">•</span>
-                  <span className="text-soft-white/90">Que amar é reinventar-se todos os dias</span>
+              
                 </li>
               </ul>
             </div>
