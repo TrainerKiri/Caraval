@@ -28,7 +28,7 @@ function MemoryDetail({ memory, onClose, onEdit, onDelete, isAdmin }: MemoryDeta
           <img 
             src={memory.imageUrl} 
             alt={memory.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
           <button 
             onClick={onClose}
@@ -87,4 +87,4 @@ function MemoryDetail({ memory, onClose, onEdit, onDelete, isAdmin }: MemoryDeta
   );
 }
 
-export default MemoryDetail;
+export default MemoryDetail
