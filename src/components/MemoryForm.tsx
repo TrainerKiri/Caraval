@@ -20,6 +20,7 @@ function MemoryForm({ onClose, editMemory }: MemoryFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
 
   useEffect(() => {
     setIsVisible(true);
@@ -28,8 +29,9 @@ function MemoryForm({ onClose, editMemory }: MemoryFormProps) {
       setTitle(editMemory.title);
       setDescription(editMemory.description);
       setDate(editMemory.date);
-      setImagePreview(editMemory.imageUrl);
-      setSelectedTags(editMemory.tags);
+      setImagePreview(editMemory.image_url);
+      setSelectedTags(editMemory.tags || []);
+      setYoutubeUrl(editMemory.youtube_url || '');
     } else {
       const today = new Date().toISOString().split('T')[0];
       setDate(today);
@@ -61,7 +63,7 @@ function MemoryForm({ onClose, editMemory }: MemoryFormProps) {
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${fileName}`;
 
-    const { error: uploadError, data } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('memory-images')
       .upload(filePath, file);
 
@@ -93,7 +95,8 @@ function MemoryForm({ onClose, editMemory }: MemoryFormProps) {
         title,
         description,
         date,
-        imageUrl: finalImageUrl,
+        image_url: finalImageUrl,
+        youtube_url: youtubeUrl || null,
         tags: selectedTags,
       };
       
@@ -202,6 +205,20 @@ function MemoryForm({ onClose, editMemory }: MemoryFormProps) {
                   />
                 </div>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="youtube_url" className="block text-sm font-medium text-soft-white/90 mb-1">
+                URL do YouTube (opcional)
+              </label>
+              <input
+                type="url"
+                id="youtube_url"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+                className="w-full p-2 rounded-md bg-light-deep-blue/30 border border-light-deep-blue/50 text-soft-white focus:outline-none focus:ring-1 focus:ring-gold/50"
+              />
             </div>
             
             <div>

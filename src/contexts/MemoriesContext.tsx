@@ -5,7 +5,7 @@ import { Memory, Tag } from '../types';
 interface MemoriesContextType {
   memories: Memory[];
   tags: Tag[];
-  addMemory: (memory: Omit<Memory, 'id'>) => Promise<void>;
+  addMemory: (memory: Omit<Memory, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
   updateMemory: (id: string, memory: Partial<Memory>) => Promise<void>;
   deleteMemory: (id: string) => Promise<void>;
   addTag: (name: string, color: string) => Promise<void>;
@@ -35,20 +35,16 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
 
   async function fetchMemories() {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { data, error } = await supabase
         .from('memories')
-        .select('*, memory_images(url)')
+        .select('*')
         .order('date', { ascending: false });
 
       if (error) throw error;
 
-      // Transform the data to match our Memory type
-      const transformedMemories = data.map(memory => ({
-        ...memory,
-        imageUrl: memory.memory_images?.[0]?.url || memory.image_url // Use first image from memory_images or fallback to image_url
-      }));
-
-      setMemories(transformedMemories || []);
+      setMemories(data || []);
     } catch (error) {
       console.error('Error fetching memories:', error);
     } finally {
@@ -70,81 +66,43 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const addMemory = async (memory: Omit<Memory, 'id'>) => {
+  const addMemory = async (memory: Omit<Memory, 'id' | 'created_at' | 'user_id'>) => {
     try {
-      // First, insert the memory
-      const { data: memoryData, error: memoryError } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
+
+      const { data, error } = await supabase
         .from('memories')
         .insert([{
-          title: memory.title,
-          description: memory.description,
-          date: memory.date,
-          image_url: memory.imageUrl, // Store in the original column as backup
-          tags: memory.tags
+          ...memory,
+          user_id: user.id
         }])
         .select()
         .single();
 
-      if (memoryError) throw memoryError;
-
-      // Then, add the image to memory_images
-      if (memory.imageUrl) {
-        const { error: imageError } = await supabase
-          .from('memory_images')
-          .insert([{
-            memory_id: memoryData.id,
-            url: memory.imageUrl,
-          }]);
-
-        if (imageError) throw imageError;
-      }
-
-      // Update the local state with the new memory
-      const newMemory = {
-        ...memoryData,
-        imageUrl: memory.imageUrl
-      };
+      if (error) throw error;
       
-      setMemories(prev => [newMemory, ...prev]);
+      setMemories(prev => [data, ...prev]);
     } catch (error) {
       console.error('Error adding memory:', error);
+      throw error;
     }
   };
 
   const updateMemory = async (id: string, memory: Partial<Memory>) => {
     try {
-      // Update the main memory record
-      const { data: memoryData, error: memoryError } = await supabase
+      const { data, error } = await supabase
         .from('memories')
-        .update({
-          title: memory.title,
-          description: memory.description,
-          date: memory.date,
-          image_url: memory.imageUrl, // Update backup image
-          tags: memory.tags
-        })
+        .update(memory)
         .eq('id', id)
         .select()
         .single();
 
-      if (memoryError) throw memoryError;
-
-      // Update or insert the image in memory_images
-      if (memory.imageUrl) {
-        const { error: imageError } = await supabase
-          .from('memory_images')
-          .upsert([{
-            memory_id: id,
-            url: memory.imageUrl,
-          }]);
-
-        if (imageError) throw imageError;
-      }
-
-      // Update local state
-      setMemories(prev => prev.map(m => m.id === id ? { ...m, ...memory } : m));
+      if (error) throw error;
+      setMemories(prev => prev.map(m => m.id === id ? { ...m, ...data } : m));
     } catch (error) {
       console.error('Error updating memory:', error);
+      throw error;
     }
   };
 
@@ -159,6 +117,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
       setMemories(prev => prev.filter(memory => memory.id !== id));
     } catch (error) {
       console.error('Error deleting memory:', error);
+      throw error;
     }
   };
 
@@ -202,12 +161,6 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
       setTags(prev => prev.filter(tag => tag.id !== id));
-      setMemories(prev =>
-        prev.map(memory => ({
-          ...memory,
-          tags: memory.tags.filter(tagId => tagId !== id),
-        }))
-      );
     } catch (error) {
       console.error('Error deleting tag:', error);
     }
@@ -216,7 +169,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
   const filteredMemories = memories
     .filter((memory) => {
       if (filterTags.length === 0) return true;
-      return memory.tags.some((tag) => filterTags.includes(tag));
+      return memory.tags?.some((tag) => filterTags.includes(tag));
     })
     .filter((memory) => {
       if (!searchQuery) return true;

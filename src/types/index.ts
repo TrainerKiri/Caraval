@@ -3,8 +3,10 @@ export interface Memory {
   title: string;
   description: string;
   date: string;
-  imageUrl: string;
-  tags: string[];
+  image_url: string;
+  user_id: string;
+  created_at: string;
+  youtube_url?: string;
 }
 
 export interface Tag {

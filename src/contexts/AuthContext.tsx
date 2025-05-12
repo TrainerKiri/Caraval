@@ -57,31 +57,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    if (data.user) {
-      const { data: profile } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (!profile) {
-        await logout();
-        throw new Error('Unauthorized access');
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (!profile) {
+          await logout();
+          throw new Error('Unauthorized access');
+        }
+        
+        setIsAdmin(true);
       }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
   }
 
   async function logout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    setIsAdmin(false);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setIsAdmin(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   }
 
   return (

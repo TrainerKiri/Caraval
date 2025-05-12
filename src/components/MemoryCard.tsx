@@ -13,7 +13,7 @@ interface MemoryCardProps {
 function MemoryCard({ memory, onClick }: MemoryCardProps) {
   const { tags } = useMemories();
   
-  const memoryTags = tags.filter(tag => memory.tags.includes(tag.id));
+  const memoryTags = tags.filter(tag => memory.tags?.includes(tag.id));
   
   return (
     <div 
@@ -30,7 +30,7 @@ function MemoryCard({ memory, onClick }: MemoryCardProps) {
             <div className="relative h-[250px]">
               <div className="absolute inset-0 bg-black/40 z-10"></div>
               <img 
-                src={memory.imageUrl} 
+                src={memory.image_url} 
                 alt={memory.title}
                 className="w-full h-full object-cover object-center"
               />
@@ -61,22 +61,24 @@ function MemoryCard({ memory, onClick }: MemoryCardProps) {
               </p>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mt-auto">
-                {memoryTags.map(tag => (
-                  <span 
-                    key={tag.id}
-                    className="inline-flex items-center px-2 py-1 rounded-full text-xs"
-                    style={{ 
-                      backgroundColor: `${tag.color}20`,
-                      color: tag.color,
-                      borderColor: `${tag.color}40`,
-                      border: '1px solid'
-                    }}
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
+              {memoryTags && memoryTags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-auto">
+                  {memoryTags.map(tag => (
+                    <span 
+                      key={tag.id}
+                      className="inline-flex items-center px-2 py-1 rounded-full text-xs"
+                      style={{ 
+                        backgroundColor: `${tag.color}20`,
+                        color: tag.color,
+                        borderColor: `${tag.color}40`,
+                        border: '1px solid'
+                      }}
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
