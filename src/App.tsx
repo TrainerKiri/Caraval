@@ -14,20 +14,44 @@ import Creditos from './pages/Creditos';
 import AdminLogin from './components/AdminLogin';
 import MagicalBackground from './components/MagicalBackground';
 import { useAuth } from './contexts/AuthContext';
+import { Loader } from 'lucide-react';
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-deep-blue">
+      <div className="text-center">
+        <Loader className="w-12 h-12 text-gold animate-spin mx-auto mb-4" />
+        <p className="text-soft-white/70 font-serif">Carregando memórias...</p>
+      </div>
+    </div>
+  );
+}
+
+function ErrorScreen({ message }: { message: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-deep-blue">
+      <div className="text-center max-w-md mx-auto px-4">
+        <div className="text-red-400 mb-4">⚠️</div>
+        <h2 className="text-xl font-serif text-soft-white mb-2">Algo deu errado</h2>
+        <p className="text-soft-white/70">{message}</p>
+      </div>
+    </div>
+  );
+}
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('entrada');
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, loading, error } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return <ErrorScreen message={error} />;
+  }
 
   const renderPage = () => {
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
-        </div>
-      );
-    }
-
     switch (currentPage) {
       case 'entrada':
         return <Entrada onExplore={() => setCurrentPage('memorias')} />;

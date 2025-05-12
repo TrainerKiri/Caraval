@@ -45,6 +45,7 @@ interface TreasuresContextType {
   playlists: Playlist[];
   letters: Letter[];
   loading: boolean;
+  error: string | null;
   addConversation: (conversation: Omit<Conversation, 'id'>) => Promise<void>;
   updateConversation: (id: string, conversation: Partial<Conversation>) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
@@ -70,61 +71,46 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [letters, setLetters] = useState<Letter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTreasures();
+    fetchTreasures()
+      .catch(err => {
+        console.error('Error fetching treasures:', err);
+        setError('Failed to load treasures. Please try again later.');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   async function fetchTreasures() {
     try {
-      setLoading(true);
-
-      // Fetch conversations
-      const { data: conversationsData, error: conversationsError } = await supabase
-        .from('conversations')
-        .select('*')
-        .order('date', { ascending: false });
+      const [
+        { data: conversationsData, error: conversationsError },
+        { data: poemsData, error: poemsError },
+        { data: playlistsData, error: playlistsError },
+        { data: lettersData, error: lettersError }
+      ] = await Promise.all([
+        supabase.from('conversations').select('*').order('date', { ascending: false }),
+        supabase.from('poems').select('*').order('date', { ascending: false }),
+        supabase.from('playlists').select('*, songs(*)').order('created_at', { ascending: false }),
+        supabase.from('letters').select('*').order('date', { ascending: false })
+      ]);
 
       if (conversationsError) throw conversationsError;
-      setConversations(conversationsData || []);
-
-      // Fetch poems
-      const { data: poemsData, error: poemsError } = await supabase
-        .from('poems')
-        .select('*')
-        .order('date', { ascending: false });
-
       if (poemsError) throw poemsError;
-      setPoems(poemsData || []);
-
-      // Fetch playlists with songs
-      const { data: playlistsData, error: playlistsError } = await supabase
-        .from('playlists')
-        .select(`
-          *,
-          songs (*)
-        `)
-        .order('created_at', { ascending: false });
-
       if (playlistsError) throw playlistsError;
-      setPlaylists(playlistsData || []);
-
-      // Fetch letters
-      const { data: lettersData, error: lettersError } = await supabase
-        .from('letters')
-        .select('*')
-        .order('date', { ascending: false });
-
       if (lettersError) throw lettersError;
+
+      setConversations(conversationsData || []);
+      setPoems(poemsData || []);
+      setPlaylists(playlistsData || []);
       setLetters(lettersData || []);
     } catch (error) {
       console.error('Error fetching treasures:', error);
-    } finally {
-      setLoading(false);
+      throw error;
     }
   }
 
-  // Conversations CRUD
   const addConversation = async (conversation: Omit<Conversation, 'id'>) => {
     try {
       const { data, error } = await supabase
@@ -170,7 +156,6 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Poems CRUD
   const addPoem = async (poem: Omit<Poem, 'id'>) => {
     try {
       const { data, error } = await supabase
@@ -216,7 +201,6 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Playlists CRUD
   const addPlaylist = async (playlist: Omit<Playlist, 'id' | 'songs'>) => {
     try {
       const { data, error } = await supabase
@@ -262,7 +246,6 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Songs CRUD
   const addSong = async (song: Omit<Song, 'id'>) => {
     try {
       const { data, error } = await supabase
@@ -318,7 +301,6 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Letters CRUD
   const addLetter = async (letter: Omit<Letter, 'id'>) => {
     try {
       const { data, error } = await supabase
@@ -371,6 +353,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       playlists,
       letters,
       loading,
+      error,
       addConversation,
       updateConversation,
       deleteConversation,

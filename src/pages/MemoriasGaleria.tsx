@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import MemoryCard from '../components/MemoryCard';
 import MemoryDetail from '../components/MemoryDetail';
 import MemoryForm from '../components/MemoryForm';
-import { Search, Tag as TagIcon, Plus, Filter, Sparkles, Loader } from 'lucide-react';
+import { Search, Tag as TagIcon, Plus, Filter, Sparkles } from 'lucide-react';
 import { Memory } from '../types';
 
 function MemoriasGaleria() {
@@ -16,7 +16,8 @@ function MemoriasGaleria() {
     searchQuery, 
     setSearchQuery,
     deleteMemory,
-    loading 
+    loading,
+    error 
   } = useMemories();
   
   const { isAdmin } = useAuth();
@@ -37,12 +38,13 @@ function MemoriasGaleria() {
     );
   };
 
-  if (loading) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader className="w-12 h-12 text-mystical-gold animate-spin mx-auto mb-4" />
-          <p className="text-soft-white/70 font-mystical">Desvendando memórias...</p>
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-red-400 mb-4">⚠️</div>
+          <h2 className="text-xl font-serif text-soft-white mb-2">Erro ao carregar memórias</h2>
+          <p className="text-soft-white/70">{error}</p>
         </div>
       </div>
     );
@@ -129,7 +131,14 @@ function MemoriasGaleria() {
             </div>
           )}
           
-          {filteredMemories.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-12 h-12 border-2 border-mystical-gold/30 border-t-mystical-gold rounded-full animate-spin mb-4"></div>
+                <p className="text-soft-white/70">Carregando memórias...</p>
+              </div>
+            </div>
+          ) : filteredMemories.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-soft-white/60 font-mystical italic text-lg">
                 Nenhuma memória encontrada neste capítulo da história...

@@ -17,6 +17,7 @@ interface MemoriesContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   loading: boolean;
+  error: string | null;
 }
 
 const MemoriesContext = createContext<MemoriesContextType | undefined>(undefined);
@@ -27,28 +28,29 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
   const [filterTags, setFilterTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMemories();
-    fetchTags();
+    Promise.all([fetchMemories(), fetchTags()])
+      .catch(err => {
+        console.error('Error initializing data:', err);
+        setError('Failed to load data. Please try again later.');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   async function fetchMemories() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
       const { data, error } = await supabase
         .from('memories')
         .select('*')
         .order('date', { ascending: false });
 
       if (error) throw error;
-
       setMemories(data || []);
     } catch (error) {
       console.error('Error fetching memories:', error);
-    } finally {
-      setLoading(false);
+      throw error;
     }
   }
 
@@ -63,6 +65,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
       setTags(data || []);
     } catch (error) {
       console.error('Error fetching tags:', error);
+      throw error;
     }
   }
 
@@ -133,6 +136,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
       setTags(prev => [...prev, data]);
     } catch (error) {
       console.error('Error adding tag:', error);
+      throw error;
     }
   };
 
@@ -149,6 +153,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
       setTags(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
     } catch (error) {
       console.error('Error updating tag:', error);
+      throw error;
     }
   };
 
@@ -163,6 +168,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
       setTags(prev => prev.filter(tag => tag.id !== id));
     } catch (error) {
       console.error('Error deleting tag:', error);
+      throw error;
     }
   };
 
@@ -196,7 +202,8 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
         setFilterTags,
         searchQuery,
         setSearchQuery,
-        loading
+        loading,
+        error
       }}
     >
       {children}

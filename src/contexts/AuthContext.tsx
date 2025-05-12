@@ -6,6 +6,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -13,6 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -51,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error checking user:', error);
+      setError('Failed to check user status');
     } finally {
       setLoading(false);
     }
@@ -58,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(email: string, password: string) {
     try {
+      setError(null);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -81,23 +85,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Login error:', error);
+      setError('Failed to login. Please check your credentials.');
       throw error;
     }
   }
 
   async function logout() {
     try {
+      setError(null);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setIsAdmin(false);
     } catch (error) {
       console.error('Logout error:', error);
+      setError('Failed to logout');
       throw error;
     }
   }
 
   return (
-    <AuthContext.Provider value={{ isAdmin, login, logout, loading }}>
+    <AuthContext.Provider value={{ isAdmin, login, logout, loading, error }}>
       {children}
     </AuthContext.Provider>
   );
