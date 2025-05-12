@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMemories } from '../contexts/MemoriesContext';
+import { useAuth } from '../contexts/AuthContext';
 import MemoryCard from '../components/MemoryCard';
 import MemoryDetail from '../components/MemoryDetail';
 import MemoryForm from '../components/MemoryForm';
@@ -18,6 +19,7 @@ function MemoriasGaleria() {
     loading 
   } = useMemories();
   
+  const { isAdmin } = useAuth();
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const [showMemoryForm, setShowMemoryForm] = useState(false);
   const [editingMemory, setEditingMemory] = useState<Memory | undefined>(undefined);
@@ -87,16 +89,18 @@ function MemoriasGaleria() {
                 Filtrar
               </button>
               
-              <button
-                onClick={() => {
-                  setEditingMemory(undefined);
-                  setShowMemoryForm(true);
-                }}
-                className="inline-flex items-center px-6 py-3 rounded-full bg-mystical-gold/20 border border-mystical-gold text-mystical-gold hover:bg-mystical-gold/30 transition-all group"
-              >
-                <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform duration-500" />
-                Nova Memória
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setEditingMemory(undefined);
+                    setShowMemoryForm(true);
+                  }}
+                  className="inline-flex items-center px-6 py-3 rounded-full bg-mystical-gold/20 border border-mystical-gold text-mystical-gold hover:bg-mystical-gold/30 transition-all group"
+                >
+                  <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform duration-500" />
+                  Nova Memória
+                </button>
+              )}
             </div>
           </div>
           
@@ -150,18 +154,23 @@ function MemoriasGaleria() {
           memory={selectedMemory} 
           onClose={() => setSelectedMemory(null)}
           onEdit={() => {
-            setEditingMemory(selectedMemory);
-            setShowMemoryForm(true);
-            setSelectedMemory(null);
+            if (isAdmin) {
+              setEditingMemory(selectedMemory);
+              setShowMemoryForm(true);
+              setSelectedMemory(null);
+            }
           }}
           onDelete={() => {
-            deleteMemory(selectedMemory.id);
-            setSelectedMemory(null);
+            if (isAdmin) {
+              deleteMemory(selectedMemory.id);
+              setSelectedMemory(null);
+            }
           }}
+          isAdmin={isAdmin}
         />
       )}
       
-      {showMemoryForm && (
+      {showMemoryForm && isAdmin && (
         <MemoryForm 
           onClose={() => setShowMemoryForm(false)} 
           editMemory={editingMemory}

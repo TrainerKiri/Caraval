@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MemoriesProvider } from './contexts/MemoriesContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { TreasuresProvider } from './contexts/TreasuresContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Entrada from './pages/Entrada';
@@ -16,7 +17,7 @@ import { useAuth } from './contexts/AuthContext';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('entrada');
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin } = useAuth();
 
   const renderPage = () => {
     switch (currentPage) {
@@ -26,7 +27,7 @@ function AppContent() {
         return <OPoeta />;
       case 'memorias':
         return <MemoriasGaleria />;
-      case 'musa':
+      case 'estrela':
         return <AMusa />;
       case 'tesouros':
         return <Tesouros />;
@@ -40,10 +41,6 @@ function AppContent() {
         return <Entrada onExplore={() => setCurrentPage('memorias')} />;
     }
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -61,7 +58,9 @@ function App() {
   return (
     <AuthProvider>
       <MemoriesProvider>
-        <AppContent />
+        <TreasuresProvider>
+          <AppContent />
+        </TreasuresProvider>
       </MemoriesProvider>
     </AuthProvider>
   );

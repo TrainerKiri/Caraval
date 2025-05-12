@@ -32,7 +32,7 @@ function MemoryCard({ memory, onClick }: MemoryCardProps) {
               <img 
                 src={memory.imageUrl} 
                 alt={memory.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
               />
               {/* Magical Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-deep-blue via-transparent to-transparent z-20"></div>

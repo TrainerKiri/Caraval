@@ -8,18 +8,17 @@ interface MemoryDetailProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  isAdmin: boolean;
 }
 
-function MemoryDetail({ memory, onClose, onEdit, onDelete }: MemoryDetailProps) {
+function MemoryDetail({ memory, onClose, onEdit, onDelete, isAdmin }: MemoryDetailProps) {
   const { tags } = useMemories();
   
-  // Format the date to be more readable
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Get the tag objects for this memory
   const memoryTags = tags.filter(tag => memory.tags.includes(tag.id));
 
   return (
@@ -29,7 +28,7 @@ function MemoryDetail({ memory, onClose, onEdit, onDelete }: MemoryDetailProps) 
           <img 
             src={memory.imageUrl} 
             alt={memory.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
           <button 
             onClick={onClose}
@@ -64,26 +63,28 @@ function MemoryDetail({ memory, onClose, onEdit, onDelete }: MemoryDetailProps) 
             </div>
           )}
           
-          <div className="flex justify-end gap-3 border-t pt-4">
-            <button 
-              onClick={onEdit}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
-            >
-              <Edit size={16} className="mr-1" />
-              Edit
-            </button>
-            <button 
-              onClick={onDelete}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
-            >
-              <Trash2 size={16} className="mr-1" />
-              Delete
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="flex justify-end gap-3 border-t pt-4">
+              <button 
+                onClick={onEdit}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+              >
+                <Edit size={16} className="mr-1" />
+                Edit
+              </button>
+              <button 
+                onClick={onDelete}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+              >
+                <Trash2 size={16} className="mr-1" />
+                Delete
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default MemoryDetail;
+export default MemoryDetail
