@@ -17,8 +17,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Initialize auth state
     checkUser();
     
+    // Subscribe to auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const { data: profile } = await supabase
@@ -41,12 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function checkUser() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
         const { data: profile } = await supabase
           .from('admin_users')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', session.user.id)
           .single();
         
         setIsAdmin(!!profile);
