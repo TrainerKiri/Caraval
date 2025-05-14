@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         const { data: adminUser } = await supabase
           .from('admin_users')
-          .select('*')
+          .select('id')
           .eq('id', session.user.id)
           .single();
         
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user) {
       const { data: adminUser } = await supabase
         .from('admin_users')
-        .select('*')
+        .select('id')
         .eq('id', session.user.id)
         .single();
       
@@ -48,22 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data: { session }, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (error) throw error;
+    if (signInError) throw signInError;
 
-    if (data.user) {
-      const { data: adminUser } = await supabase
+    if (session?.user) {
+      const { data: adminUser, error: adminError } = await supabase
         .from('admin_users')
-        .select('*')
-        .eq('id', data.user.id)
+        .select('id')
+        .eq('id', session.user.id)
         .single();
       
-      if (!adminUser) {
-        await logout();
+      if (adminError || !adminUser) {
+        await supabase.auth.signOut();
         throw new Error('Acesso não autorizado');
       }
       

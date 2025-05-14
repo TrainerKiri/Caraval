@@ -31,12 +31,35 @@ function MagicalBackground() {
       }, 1500);
     };
 
+    const createFirework = () => {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.left = `${Math.random() * 100}%`;
+      firework.style.top = `${Math.random() * 50 + 50}%`;
+      container.appendChild(firework);
+
+      // Create particles
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.setProperty('--angle', `${(360 / 30) * i}deg`);
+        particle.style.setProperty('--hue', `${Math.random() * 360}deg`);
+        firework.appendChild(particle);
+      }
+
+      setTimeout(() => {
+        firework.remove();
+      }, 1000);
+    };
+
     const shootingStarInterval = setInterval(createShootingStar, 4000);
     const sparkleInterval = setInterval(createSparkle, 500);
+    const fireworkInterval = setInterval(createFirework, 3000);
 
     return () => {
       clearInterval(shootingStarInterval);
       clearInterval(sparkleInterval);
+      clearInterval(fireworkInterval);
     };
   }, []);
 

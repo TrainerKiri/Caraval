@@ -18,7 +18,7 @@ function AMusa() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="container mx-auto max-w-4xl">
         <div className={`transition-all duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="text-center mb-10"
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-serif text-gold mb-4">A Estrela</h2>
             <p className="text-soft-white/80 max-w-xl mx-auto">
               Aquela que ilumina os caminhos mais escuros e guia os passos mais incertos
