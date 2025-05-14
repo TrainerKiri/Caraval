@@ -15,9 +15,7 @@ function MemoriasGaleria() {
     filterTags, 
     searchQuery, 
     setSearchQuery,
-    deleteMemory,
-    loading,
-    error 
+    deleteMemory
   } = useMemories();
   
   const { isAdmin } = useAuth();
@@ -37,18 +35,6 @@ function MemoriasGaleria() {
       : [...filterTags, tagId]
     );
   };
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-red-400 mb-4">⚠️</div>
-          <h2 className="text-xl font-serif text-soft-white mb-2">Erro ao carregar memórias</h2>
-          <p className="text-soft-white/70">{error}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -131,14 +117,7 @@ function MemoriasGaleria() {
             </div>
           )}
           
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="w-12 h-12 border-2 border-mystical-gold/30 border-t-mystical-gold rounded-full animate-spin mb-4"></div>
-                <p className="text-soft-white/70">Carregando memórias...</p>
-              </div>
-            </div>
-          ) : filteredMemories.length === 0 ? (
+          {filteredMemories.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-soft-white/60 font-mystical italic text-lg">
                 Nenhuma memória encontrada neste capítulo da história...

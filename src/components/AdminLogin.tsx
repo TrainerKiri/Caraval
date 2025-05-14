@@ -17,8 +17,8 @@ function AdminLogin() {
     try {
       await login(email, password);
     } catch (error) {
+      console.error('Erro no login:', error);
       setError('Falha na autenticação. Verifique suas credenciais.');
-      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }

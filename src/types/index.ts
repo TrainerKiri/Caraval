@@ -7,6 +7,7 @@ export interface Memory {
   user_id: string;
   created_at: string;
   youtube_url?: string;
+  tags?: string[];
 }
 
 export interface Tag {
