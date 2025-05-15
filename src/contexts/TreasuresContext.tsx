@@ -61,6 +61,7 @@ interface TreasuresContextType {
   addLetter: (letter: Omit<Letter, 'id'>) => Promise<void>;
   updateLetter: (id: string, letter: Partial<Letter>) => Promise<void>;
   deleteLetter: (id: string) => Promise<void>;
+  refreshTreasures: () => Promise<void>;
 }
 
 const TreasuresContext = createContext<TreasuresContextType | undefined>(undefined);
@@ -73,17 +74,11 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTreasures()
-      .catch(err => {
-        console.error('Error fetching treasures:', err);
-        setError('Failed to load treasures. Please try again later.');
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function fetchTreasures() {
+  const fetchTreasures = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
       const [
         { data: conversationsData, error: conversationsError },
         { data: poemsData, error: poemsError },
@@ -107,9 +102,15 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setLetters(lettersData || []);
     } catch (error) {
       console.error('Error fetching treasures:', error);
-      throw error;
+      setError('Failed to load treasures. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchTreasures();
+  }, []);
 
   const addConversation = async (conversation: Omit<Conversation, 'id'>) => {
     try {
@@ -123,6 +124,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setConversations(prev => [data, ...prev]);
     } catch (error) {
       console.error('Error adding conversation:', error);
+      throw error;
     }
   };
 
@@ -139,6 +141,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setConversations(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error('Error updating conversation:', error);
+      throw error;
     }
   };
 
@@ -153,6 +156,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setConversations(prev => prev.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error deleting conversation:', error);
+      throw error;
     }
   };
 
@@ -168,6 +172,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setPoems(prev => [data, ...prev]);
     } catch (error) {
       console.error('Error adding poem:', error);
+      throw error;
     }
   };
 
@@ -184,6 +189,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setPoems(prev => prev.map(p => p.id === id ? { ...p, ...data } : p));
     } catch (error) {
       console.error('Error updating poem:', error);
+      throw error;
     }
   };
 
@@ -198,6 +204,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setPoems(prev => prev.filter(p => p.id !== id));
     } catch (error) {
       console.error('Error deleting poem:', error);
+      throw error;
     }
   };
 
@@ -213,6 +220,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setPlaylists(prev => [{ ...data, songs: [] }, ...prev]);
     } catch (error) {
       console.error('Error adding playlist:', error);
+      throw error;
     }
   };
 
@@ -226,9 +234,10 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) throw error;
-      setPlaylists(prev => prev.map(p => p.id === id ? { ...p, ...data } : p));
+      setPlaylists(prev => prev.map(p => p.id === id ? { ...p, ...data, songs: p.songs } : p));
     } catch (error) {
       console.error('Error updating playlist:', error);
+      throw error;
     }
   };
 
@@ -243,6 +252,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setPlaylists(prev => prev.filter(p => p.id !== id));
     } catch (error) {
       console.error('Error deleting playlist:', error);
+      throw error;
     }
   };
 
@@ -262,6 +272,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       ));
     } catch (error) {
       console.error('Error adding song:', error);
+      throw error;
     }
   };
 
@@ -281,6 +292,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       })));
     } catch (error) {
       console.error('Error updating song:', error);
+      throw error;
     }
   };
 
@@ -298,6 +310,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       })));
     } catch (error) {
       console.error('Error deleting song:', error);
+      throw error;
     }
   };
 
@@ -313,6 +326,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setLetters(prev => [data, ...prev]);
     } catch (error) {
       console.error('Error adding letter:', error);
+      throw error;
     }
   };
 
@@ -329,6 +343,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setLetters(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
     } catch (error) {
       console.error('Error updating letter:', error);
+      throw error;
     }
   };
 
@@ -343,7 +358,12 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       setLetters(prev => prev.filter(l => l.id !== id));
     } catch (error) {
       console.error('Error deleting letter:', error);
+      throw error;
     }
+  };
+
+  const refreshTreasures = async () => {
+    await fetchTreasures();
   };
 
   return (
@@ -369,6 +389,7 @@ export function TreasuresProvider({ children }: { children: ReactNode }) {
       addLetter,
       updateLetter,
       deleteLetter,
+      refreshTreasures,
     }}>
       {children}
     </TreasuresContext.Provider>

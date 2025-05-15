@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Loader } from 'lucide-react';
 
 function AdminLogin() {
-  const { login } = useAuth();
+  const { login, error: authError, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     try {
       await login(email, password);
     } catch (error) {
-      console.error('Erro no login:', error);
-      setError('Falha na autenticação. Verifique suas credenciais.');
-    } finally {
-      setLoading(false);
+      console.error('Login error:', error);
+      setError(authError || 'Falha na autenticação. Verifique suas credenciais.');
     }
   };
 
@@ -48,6 +44,7 @@ function AdminLogin() {
                   className="w-full pl-10 pr-4 py-2 bg-deep-blue/50 border border-light-deep-blue/50 rounded-lg text-soft-white focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/50 transition-all"
                   required
                   autoComplete="email"
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -63,6 +60,7 @@ function AdminLogin() {
                   className="w-full pl-10 pr-4 py-2 bg-deep-blue/50 border border-light-deep-blue/50 rounded-lg text-soft-white focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/50 transition-all"
                   required
                   autoComplete="current-password"
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -74,10 +72,7 @@ function AdminLogin() {
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <Loader className="w-5 h-5 mr-2 animate-spin" />
                   Entrando...
                 </span>
               ) : 'Entrar'}

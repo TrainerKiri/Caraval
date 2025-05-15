@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Bookmark, Music, FileText, Sparkles } from 'lucide-react';
+import { MessageSquare, Bookmark, Music, FileText, Sparkles, Loader, Plus, Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTreasures } from '../contexts/TreasuresContext';
 
 function Tesouros() {
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('conversas');
   const { isAdmin } = useAuth();
+  const { loading, error, refreshTreasures } = useTreasures();
   
   useEffect(() => {
     setVisible(true);
@@ -17,6 +19,34 @@ function Tesouros() {
     { id: 'musicas', label: 'Músicas', icon: <Music size={16} /> },
     { id: 'cartas', label: 'Cartas', icon: <FileText size={16} /> },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-8 h-8 text-gold animate-spin mx-auto mb-4" />
+          <p className="text-soft-white/70">Carregando tesouros...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 mb-4">⚠️</div>
+          <p className="text-red-400 mb-2">{error}</p>
+          <button 
+            onClick={refreshTreasures}
+            className="text-gold hover:text-gold/80 transition-colors"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
   
   const renderTabContent = () => {
     switch (activeTab) {
@@ -76,47 +106,54 @@ function Tesouros() {
 }
 
 function ConversasTab({ isAdmin }: { isAdmin: boolean }) {
-  const conversations = [
-    {
-      date: '10 de Maio, 2023',
-      messages: [
-        { person: 'Ela', text: 'Sabe aquela sensação de que estávamos destinados a nos encontrar?' },
-        { person: 'Eu', text: 'Como se todas as decisões que tomamos nos levassem a este exato momento?' },
-        { person: 'Ela', text: 'Exatamente isso. Como se o universo fosse um grande quebra-cabeça...' },
-        { person: 'Eu', text: 'E nós fôssemos duas peças feitas para se encaixarem.' },
-      ]
-    },
-    {
-      date: '23 de Agosto, 2023',
-      messages: [
-        { person: 'Eu', text: 'Se pudesse viajar para qualquer época, qual escolheria?' },
-        { person: 'Ela', text: 'Talvez os anos 20 em Paris, com todos aqueles artistas e escritores.' },
-        { person: 'Eu', text: 'Poderíamos tomar café com Hemingway e dançar ao som do jazz.' },
-        { person: 'Ela', text: 'Mas pensando bem, prefiro estar aqui e agora, criando nossas próprias histórias.' },
-      ]
+  const { conversations, addConversation, updateConversation, deleteConversation } = useTreasures();
+  const [showForm, setShowForm] = useState(false);
+  const [editingConversation, setEditingConversation] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta conversa?')) {
+      try {
+        await deleteConversation(id);
+      } catch (error) {
+        console.error('Error deleting conversation:', error);
+      }
     }
-  ];
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-serif text-gold">Conversas Preciosas</h3>
         {isAdmin && (
-          <button className="text-gold hover:text-gold/80 transition-colors">
-            + Adicionar Conversa
+          <button 
+            onClick={() => setShowForm(true)}
+            className="inline-flex items-center text-gold hover:text-gold/80 transition-colors"
+          >
+            <Plus size={16} className="mr-1" />
+            Adicionar Conversa
           </button>
         )}
       </div>
       
       <div className="space-y-8">
-        {conversations.map((convo, index) => (
-          <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
+        {conversations.map((convo) => (
+          <div key={convo.id} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
             <div className="flex items-center justify-between mb-4">
               <span className="text-soft-white/60 text-sm">{convo.date}</span>
               {isAdmin && (
                 <div className="flex gap-2">
-                  <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
-                  <button className="text-red-400 hover:text-red-300">Excluir</button>
+                  <button 
+                    onClick={() => setEditingConversation(convo.id)}
+                    className="text-soft-white/60 hover:text-soft-white transition-colors"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(convo.id)}
+                    className="text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               )}
             </div>
@@ -150,55 +187,54 @@ function ConversasTab({ isAdmin }: { isAdmin: boolean }) {
 }
 
 function PoemasTab({ isAdmin }: { isAdmin: boolean }) {
-  const poems = [
-    {
-      title: 'Sussurro das Estrelas',
-      content: `Entre constelações dançantes,
-Encontrei seu olhar,
-Como bússola celestial
-A me guiar.
+  const { poems, addPoem, updatePoem, deletePoem } = useTreasures();
+  const [showForm, setShowForm] = useState(false);
+  const [editingPoem, setEditingPoem] = useState<string | null>(null);
 
-Cada verso deste poema
-É estrela em seu firmamento,
-Pequena luz que brilha
-No infinito deste momento.`,
-      date: 'Primavera de 2023'
-    },
-    {
-      title: 'Cartografia dos Sonhos',
-      content: `Há mapas que não se desenham em papel,
-Mas na pele, nos olhares, nos silêncios.
-Há jornadas que não se medem em distâncias,
-Mas em batimentos, em sorrisos, em memórias.
-
-E neste atlas de nós dois,
-Cada abraço é um continente descoberto,
-Cada beijo, um oceano navegado,
-Cada promessa, uma constelação a guiar-nos.`,
-      date: 'Outono de 2022'
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir este poema?')) {
+      try {
+        await deletePoem(id);
+      } catch (error) {
+        console.error('Error deleting poem:', error);
+      }
     }
-  ];
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-serif text-gold">Poemas & Escritos</h3>
         {isAdmin && (
-          <button className="text-gold hover:text-gold/80 transition-colors">
-            + Adicionar Poema
+          <button 
+            onClick={() => setShowForm(true)}
+            className="inline-flex items-center text-gold hover:text-gold/80 transition-colors"
+          >
+            <Plus size={16} className="mr-1" />
+            Adicionar Poema
           </button>
         )}
       </div>
       
       <div className="space-y-8">
-        {poems.map((poem, index) => (
-          <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
+        {poems.map((poem) => (
+          <div key={poem.id} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
             <div className="flex justify-between items-center mb-3">
               <h4 className="text-lg font-serif text-gold">{poem.title}</h4>
               {isAdmin && (
                 <div className="flex gap-2">
-                  <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
-                  <button className="text-red-400 hover:text-red-300">Excluir</button>
+                  <button 
+                    onClick={() => setEditingPoem(poem.id)}
+                    className="text-soft-white/60 hover:text-soft-white transition-colors"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(poem.id)}
+                    className="text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               )}
             </div>
@@ -216,42 +252,50 @@ Cada promessa, uma constelação a guiar-nos.`,
 }
 
 function MusicasTab({ isAdmin }: { isAdmin: boolean }) {
-  const playlists = [
-    {
-      name: 'Nossas Canções',
-      description: 'Trilha sonora dos nossos momentos especiais',
-      songs: [
-        { title: 'Perfect', artist: 'Ed Sheeran', memory: 'Nossa dança no casamento dos amigos' },
-        { title: 'Photograph', artist: 'Ed Sheeran', memory: 'Viagem à praia' },
-        { title: 'All of Me', artist: 'John Legend', memory: 'Nosso primeiro jantar romântico' },
-        { title: 'Yellow', artist: 'Coldplay', memory: 'Caminhada no parque ao pôr do sol' },
-      ]
-    },
-    {
-      name: 'Para Dias de Chuva',
-      description: 'Canções para ouvir abraçados enquanto chove lá fora',
-      songs: [
-        { title: 'The Scientist', artist: 'Coldplay', memory: 'Tarde de domingo com chocolate quente' },
-        { title: 'Fix You', artist: 'Coldplay', memory: 'Momento difícil que superamos juntos' },
-        { title: 'Falling Slowly', artist: 'Glen Hansard & Markéta Irglová', memory: 'Filme que assistimos na primeira semana juntos' },
-      ]
+  const { playlists, addPlaylist, updatePlaylist, deletePlaylist, addSong, updateSong, deleteSong } = useTreasures();
+  const [showPlaylistForm, setShowPlaylistForm] = useState(false);
+  const [editingPlaylist, setEditingPlaylist] = useState<string | null>(null);
+  const [showSongForm, setShowSongForm] = useState(false);
+  const [editingSong, setEditingSong] = useState<string | null>(null);
+
+  const handleDeletePlaylist = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta playlist?')) {
+      try {
+        await deletePlaylist(id);
+      } catch (error) {
+        console.error('Error deleting playlist:', error);
+      }
     }
-  ];
+  };
+
+  const handleDeleteSong = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta música?')) {
+      try {
+        await deleteSong(id);
+      } catch (error) {
+        console.error('Error deleting song:', error);
+      }
+    }
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-serif text-gold">Nossas Melodias</h3>
         {isAdmin && (
-          <button className="text-gold hover:text-gold/80 transition-colors">
-            + Adicionar Playlist
+          <button 
+            onClick={() => setShowPlaylistForm(true)}
+            className="inline-flex items-center text-gold hover:text-gold/80 transition-colors"
+          >
+            <Plus size={16} className="mr-1" />
+            Adicionar Playlist
           </button>
         )}
       </div>
       
       <div className="space-y-8">
-        {playlists.map((playlist, index) => (
-          <div key={index} className="bg-deep-blue/50 rounded-lg overflow-hidden border border-light-deep-blue/30">
+        {playlists.map((playlist) => (
+          <div key={playlist.id} className="bg-deep-blue/50 rounded-lg overflow-hidden border border-light-deep-blue/30">
             <div className="p-5">
               <div className="flex justify-between items-center">
                 <div>
@@ -260,28 +304,63 @@ function MusicasTab({ isAdmin }: { isAdmin: boolean }) {
                 </div>
                 {isAdmin && (
                   <div className="flex gap-2">
-                    <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
-                    <button className="text-red-400 hover:text-red-300">Excluir</button>
+                    <button 
+                      onClick={() => setEditingPlaylist(playlist.id)}
+                      className="text-soft-white/60 hover:text-soft-white transition-colors"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeletePlaylist(playlist.id)}
+                      className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 )}
               </div>
+              
+              {isAdmin && (
+                <button 
+                  onClick={() => setShowSongForm(true)}
+                  className="mt-4 text-gold hover:text-gold/80 transition-colors text-sm"
+                >
+                  <Plus size={14} className="inline mr-1" />
+                  Adicionar Música
+                </button>
+              )}
             </div>
             
             <div className="border-t border-light-deep-blue/30">
-              {playlist.songs.map((song, songIndex) => (
+              {playlist.songs.map((song) => (
                 <div 
-                  key={songIndex}
-                  className={`flex flex-col sm:flex-row sm:items-center p-4 ${
-                    songIndex % 2 === 0 ? 'bg-light-deep-blue/10' : ''
-                  }`}
+                  key={song.id}
+                  className="flex items-center justify-between p-4 hover:bg-light-deep-blue/10"
                 >
                   <div className="flex-1">
                     <div className="font-medium text-soft-white">{song.title}</div>
                     <div className="text-soft-white/60 text-sm">{song.artist}</div>
+                    <div className="mt-1 text-soft-white/70 text-sm italic">
+                      "{song.memory}"
+                    </div>
                   </div>
-                  <div className="mt-2 sm:mt-0 text-soft-white/70 text-sm italic">
-                    "{song.memory}"
-                  </div>
+                  
+                  {isAdmin && (
+                    <div className="flex gap-2 ml-4">
+                      <button 
+                        onClick={() => setEditingSong(song.id)}
+                        className="text-soft-white/60 hover:text-soft-white transition-colors"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteSong(song.id)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -293,55 +372,56 @@ function MusicasTab({ isAdmin }: { isAdmin: boolean }) {
 }
 
 function CartasTab({ isAdmin }: { isAdmin: boolean }) {
-  const letters = [
-    {
-      title: 'Para abrir quando sentir saudade',
-      date: '15 de Janeiro, 2023',
-      content: `Minha querida,
+  const { letters, addLetter, updateLetter, deleteLetter } = useTreasures();
+  const [showForm, setShowForm] = useState(false);
+  const [editingLetter, setEditingLetter] = useState<string | null>(null);
 
-Quando seus olhos encontrarem estas palavras, provavelmente estarei pensando em você, mesmo que à distância. A saudade é como maré: às vezes recua, às vezes avança com força total, mas sempre está lá, no horizonte dos nossos sentimentos.
-
-Quero que saiba que em cada momento de ausência, estou tecendo novos sonhos para compartilharmos. Cada segundo longe é apenas um passo na direção do nosso próximo reencontro.
-
-Até breve, até sempre,
-Seu poeta`
-    },
-    {
-      title: 'Para ler em um dia especial',
-      date: '30 de Abril, 2023',
-      content: `Luz dos meus dias,
-
-Esta carta é uma pequena cápsula do tempo. Nela coloco todo o amor que sinto agora, para que no futuro, quando a rotina tentar nos convencer que o extraordinário é comum, você possa lembrar deste sentimento em sua forma mais pura.
-
-Celebrações são apenas desculpas para expressarmos o que sentimos todos os dias. Cada amanhecer ao seu lado é motivo de festa, cada sorriso seu é presente desembrulhado.
-
-Com todo meu coração,
-Quem te ama infinitamente`
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta carta?')) {
+      try {
+        await deleteLetter(id);
+      } catch (error) {
+        console.error('Error deleting letter:', error);
+      }
     }
-  ];
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-serif text-gold">Cartas & Bilhetes</h3>
         {isAdmin && (
-          <button className="text-gold hover:text-gold/80 transition-colors">
-            + Adicionar Carta
+          <button 
+            onClick={() => setShowForm(true)}
+            className="inline-flex items-center text-gold hover:text-gold/80 transition-colors"
+          >
+            <Plus size={16} className="mr-1" />
+            Adicionar Carta
           </button>
         )}
       </div>
       
       <div className="space-y-8">
-        {letters.map((letter, index) => (
-          <div key={index} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
+        {letters.map((letter) => (
+          <div key={letter.id} className="bg-deep-blue/50 rounded-lg p-5 border border-light-deep-blue/30">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-serif text-gold">{letter.title}</h4>
               <div className="flex items-center gap-4">
                 <span className="text-soft-white/60 text-sm">{letter.date}</span>
                 {isAdmin && (
                   <div className="flex gap-2">
-                    <button className="text-soft-white/60 hover:text-soft-white">Editar</button>
-                    <button className="text-red-400 hover:text-red-300">Excluir</button>
+                    <button 
+                      onClick={() => setEditingLetter(letter.id)}
+                      className="text-soft-white/60 hover:text-soft-white transition-colors"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(letter.id)}
+                      className="text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 )}
               </div>

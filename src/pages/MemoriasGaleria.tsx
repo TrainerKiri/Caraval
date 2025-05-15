@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import MemoryCard from '../components/MemoryCard';
 import MemoryDetail from '../components/MemoryDetail';
 import MemoryForm from '../components/MemoryForm';
-import { Search, Tag as TagIcon, Plus, Filter, Sparkles } from 'lucide-react';
+import { Search, Tag as TagIcon, Plus, Filter, Sparkles, Loader } from 'lucide-react';
 import { Memory } from '../types';
 
 function MemoriasGaleria() {
@@ -15,7 +15,10 @@ function MemoriasGaleria() {
     filterTags, 
     searchQuery, 
     setSearchQuery,
-    deleteMemory
+    deleteMemory,
+    loading,
+    error,
+    refreshMemories
   } = useMemories();
   
   const { isAdmin } = useAuth();
@@ -35,6 +38,34 @@ function MemoriasGaleria() {
       : [...filterTags, tagId]
     );
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-8 h-8 text-gold animate-spin mx-auto mb-4" />
+          <p className="text-soft-white/70">Carregando memórias...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 mb-4">⚠️</div>
+          <p className="text-red-400 mb-2">{error}</p>
+          <button 
+            onClick={refreshMemories}
+            className="text-gold hover:text-gold/80 transition-colors"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -148,10 +179,15 @@ function MemoriasGaleria() {
               setSelectedMemory(null);
             }
           }}
-          onDelete={() => {
+          onDelete={async () => {
             if (isAdmin) {
-              deleteMemory(selectedMemory.id);
-              setSelectedMemory(null);
+              try {
+                await deleteMemory(selectedMemory.id);
+                setSelectedMemory(null);
+              } catch (error) {
+                console.error('Error deleting memory:', error);
+                // You might want to show an error message to the user here
+              }
             }
           }}
           isAdmin={isAdmin}
